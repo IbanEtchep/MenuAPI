@@ -1,5 +1,6 @@
 package fr.iban.menuapi.menu;
 
+import fr.iban.menuapi.MenuItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -40,9 +41,11 @@ public class ConfirmMenu extends Menu {
 	}
 
 	@Override
-	public void handleMenu(InventoryClickEvent e) {
+	public void handleMenuClick(InventoryClickEvent e) {
 		ItemStack clicked = e.getCurrentItem();
-		
+
+		if(clicked == null) return;
+
 		if(clicked.getType() == Material.GREEN_STAINED_GLASS_PANE) {
 			callback.call(true);
 		}else if(clicked.getType() == Material.RED_STAINED_GLASS_PANE) {
@@ -52,31 +55,31 @@ public class ConfirmMenu extends Menu {
 
 	@Override
 	public void setMenuItems() {
-		ItemStack confirmItem = getConfirmItem();
-		ItemStack cancelItem = getCancelItem();
-		ItemStack middleItem = getMiddleItem();
+		MenuItem confirmItem = getConfirmItem();
+		MenuItem cancelItem = getCancelItem();
+		MenuItem middleItem = getMiddleItem();
 		for (int i = 0; i < getSlots(); i++) {
 			int rowSlot = (i+9) % 9;
 			if(rowSlot < 4) {
-				inventory.setItem(i, confirmItem);
+				setMenuItem(i, confirmItem);
 			}else if(rowSlot > 4) {
-				inventory.setItem(i, cancelItem);
+				setMenuItem(i, cancelItem);
 			}else {
-				inventory.setItem(i, middleItem);
+				setMenuItem(i, middleItem);
 			}
 		}
 	}
-	
-	private ItemStack getConfirmItem() {
-		return new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setDisplayName("§2§lCONFIRMER").build();
+
+	private MenuItem getConfirmItem(){
+		return new MenuItem(new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setDisplayName("§2§lCONFIRMER").build(), e -> callback.call(true));
 	}
 	
-	private ItemStack getCancelItem() {
-		return new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("§4§lANNULER").build();
+	private MenuItem getCancelItem() {
+		return new MenuItem(new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("§4§lANNULER").build(), e -> callback.call(false));
 	}
 	
-	private ItemStack getMiddleItem() {
-		return new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setDisplayName(desc).build();
+	private MenuItem getMiddleItem() {
+		return new MenuItem(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setDisplayName(desc).build());
 	}
 
 	@Override
