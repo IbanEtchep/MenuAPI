@@ -17,6 +17,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -35,13 +36,10 @@ public abstract class Menu implements InventoryHolder {
 	protected List<Integer> templateSlots;
 	protected Menu previousMenu;
 	private int lastInsert;
+	private boolean loaded = false;
 
 	public Menu(Player player) {
 		this.player = player;
-		inventory = Bukkit.createInventory(this, getSlots(), LegacyComponentSerializer.builder().hexColors().build().deserialize(getMenuName()));
-		this.setMenuTemplateItems();
-		this.templateSlots= getTemplateSlots();
-		this.setMenuItems();
 	}
 
 	public Menu(Player player, Menu previousMenu) {
@@ -50,9 +48,26 @@ public abstract class Menu implements InventoryHolder {
 	}
 
 	public void open() {
+		if(!loaded) {
+			inventory = Bukkit.createInventory(this, getSlots(), LegacyComponentSerializer.builder().hexColors().build().deserialize(getMenuName()));
+			this.setMenuTemplateItems();
+			this.templateSlots= getTemplateSlots();
+			this.setMenuItems();
+			this.loaded = true;
+		}
 		inventory.clear();
 		fillInventory();
 		player.openInventory(inventory);
+	}
+	
+	public void reload() {
+		loaded = false;
+		open();
+	}
+	
+	@Override
+	public Inventory getInventory() {
+		return inventory;
 	}
 
 	public abstract String getMenuName();
@@ -63,7 +78,12 @@ public abstract class Menu implements InventoryHolder {
 		return getRows()*9;
 	}
 
-	public void handleMenu(InventoryClickEvent e) {
+	
+	/*
+	 * Handle Events : 
+	 */
+	
+	public void handleMenuClick(InventoryClickEvent e) {
 		if(e.getClickedInventory() == e.getView().getTopInventory()) {
 			int slot = e.getSlot();
 			MenuItem item = menuItems.get(slot);
@@ -78,15 +98,13 @@ public abstract class Menu implements InventoryHolder {
 			}
 		}
 	}
+	
+	public boolean cancelClicks() {
+		return true;
+	}
 
 	public void handleMenuClose(InventoryCloseEvent e) {
 
-	}
-
-	public abstract void setMenuTemplateItems();
-
-	public boolean isTemplateSlot(int slot) {
-		return templateSlots.contains(slot) ;
 	}
 
 	public abstract void setMenuItems();
@@ -114,10 +132,6 @@ public abstract class Menu implements InventoryHolder {
 		fillItems();
 	}
 
-	@Override
-	public Inventory getInventory() {
-		return inventory;
-	}
 
 	protected MenuItem getCloseBotton() {
 		if(hasPreviousMenu()) {
@@ -136,13 +150,13 @@ public abstract class Menu implements InventoryHolder {
 	}
 
 	private List<Integer> getTemplateSlots() {
-		List<Integer> templateSlots = new ArrayList<>();
+		List<Integer> slots = new ArrayList<>();
 		for (int i = 0; i < getSlots(); i++) {
 			if(templateItems.containsKey(i)) {
-				templateSlots.add(i);
+				slots.add(i);
 			}
 		}
-		return templateSlots;
+		return slots;
 	}
 
 
@@ -153,7 +167,6 @@ public abstract class Menu implements InventoryHolder {
 	protected void setMenuItem(int row, int coll, MenuItem item) {
 		setMenuItem(row*9 + coll, item);
 	}
-
 
 	protected void setMenuItem(int slot, MenuItem item) {
 		menuItems.put(slot, item);
@@ -180,6 +193,11 @@ public abstract class Menu implements InventoryHolder {
 		templateItems.put(slot, item);
 	}
 
+	public abstract void setMenuTemplateItems();
+
+	public boolean isTemplateSlot(int slot) {
+		return templateSlots.contains(slot) ;
+	}
 
 	/*
 	 * Utils
@@ -214,6 +232,10 @@ public abstract class Menu implements InventoryHolder {
 		for (int i = inventory.firstEmpty() ; inventory.firstEmpty() != -1; i = inventory.firstEmpty()) {
 			inventory.setItem(i, FILLER_GLASS);
 		}
+	}
+	
+	protected String centerTitle(String title) {
+	    return Strings.repeat(" ", 22 - ChatColor.stripColor(title).length()) + title;
 	}
 
 	public void addMenuBorder(){

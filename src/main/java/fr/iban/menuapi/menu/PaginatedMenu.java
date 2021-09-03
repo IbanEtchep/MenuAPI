@@ -80,7 +80,7 @@ public abstract class PaginatedMenu extends Menu {
 
 
 	@Override
-	public void handleMenu(InventoryClickEvent e) {
+	public void handleMenuClick(InventoryClickEvent e) {
 		if(e.getClickedInventory() == e.getView().getTopInventory()) {
 			int slot = page*getSlots()+e.getSlot();
 			MenuItem item = menuItems.get(slot);
@@ -97,6 +97,7 @@ public abstract class PaginatedMenu extends Menu {
 	}
 
 	protected int getLastPage() {
+		if(menuItems.isEmpty()) return 0;
 		return Collections.max(menuItems.keySet())/getSlots();
 	}
 
