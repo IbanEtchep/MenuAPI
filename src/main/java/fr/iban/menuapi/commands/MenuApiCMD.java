@@ -24,7 +24,7 @@ public class MenuApiCMD implements CommandExecutor {
             if(args.length >= 1){
                 if(args[0].equalsIgnoreCase("edittemplate")){
                     String templateName = args[1];
-                    new ConfigurableTemplate(player, plugin, templateName).open();
+                    new ConfigurableTemplate(player, plugin, plugin.getTemplates().get(templateName)).open();
                 }
             }
         }
