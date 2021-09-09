@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import fr.iban.menuapi.objects.Template;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.event.Listener;
@@ -20,11 +21,13 @@ public final class MenuAPI extends JavaPlugin {
 	
 	private static MenuAPI instance;
 	private Map<UUID, TextCallback> textInputs;
+	private Map<String, Template> templates;
 
 	@Override
 	public void onEnable() {
 		instance = this;
 		textInputs = new HashMap<>();
+		templates = getTemplatesFromConfig();
 		saveDefaultConfig();
     	ConfigurationSerialization.registerClass(Display.class, "display");
     	registerListeners(new InventoryListener(), new AsyncChatListener(this));
@@ -47,13 +50,22 @@ public final class MenuAPI extends JavaPlugin {
 		return instance;
 	}
 
-	public Map<Integer, MenuItem> getTemplateItems(String template){
-		String configPath = "menus."+template;
-		Map<Integer, MenuItem> map = new HashMap<>();
-		for(int slot : getConfig().getConfigurationSection(configPath+".items").getKeys(false).stream().map(s -> Integer.parseInt(s)).toList()){
-			map.put(slot, new MenuItem(((Display) getConfig().get(configPath+".items."+slot)).getBuiltItemStack()));
+	private Map<String, Template> getTemplatesFromConfig(){
+		Map<String, Template> templates = new HashMap<>();
+		if(getConfig().getConfigurationSection("menus") != null){
+			for(String name : getConfig().getConfigurationSection("menus").getKeys(false)){
+				String configPath = "menus."+name;
+				Map<Integer, MenuItem> map = new HashMap<>();
+				for(int slot : getConfig().getConfigurationSection(configPath+".items").getKeys(false).stream().map(s -> Integer.parseInt(s)).toList()){
+					map.put(slot, new MenuItem(((Display) getConfig().get(configPath+".items."+slot)).getBuiltItemStack()));
+				}
+				templates.put(name, new Template(name, map));
+			}
 		}
-		return map;
+		return templates;
 	}
 
+	public Map<String, Template> getTemplates() {
+		return templates;
+	}
 }

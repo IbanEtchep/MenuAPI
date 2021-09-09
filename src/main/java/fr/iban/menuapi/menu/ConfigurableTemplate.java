@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import fr.iban.menuapi.objects.Template;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -19,7 +20,7 @@ public class ConfigurableTemplate extends ConfigurableMenu<Integer>{
 	private String name;
 	private Plugin plugin;
 
-	public ConfigurableTemplate(Player player, Plugin plugin, String name) {
+	public ConfigurableTemplate(Player player, Plugin plugin, Template template) {
 		super(player);
 		this.name = name;
 		this.plugin = plugin;

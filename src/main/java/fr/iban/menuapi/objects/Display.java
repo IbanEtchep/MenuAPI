@@ -1,14 +1,14 @@
 package fr.iban.menuapi.objects;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import fr.iban.menuapi.utils.HexColor;
@@ -29,7 +29,7 @@ public class Display implements ConfigurationSerializable {
 	public Display(int page, int slot, ItemStack itemstack, String name, List<String> lore, boolean enchanted) {
 		this.page = page;
 		this.slot = slot;
-		this.itemstack = itemstack;
+		this.itemstack = removeItemMeta(itemstack);
 		this.name = name;
 		this.lore = lore;
 		this.enchanted = enchanted;
@@ -68,9 +68,9 @@ public class Display implements ConfigurationSerializable {
 		return itemstack;
 	}
 
-	public void setItemstack(ItemStack itemstack) {
+	public void setItemstack(ItemStack item) {
 		this.builtItemStack = null;
-		this.itemstack = itemstack;
+		this.itemstack = removeItemMeta(item);
 	}
 
 	public String getName() {
@@ -111,8 +111,6 @@ public class Display implements ConfigurationSerializable {
 
 	public ItemStack getBuiltItemStack() {
 		if(builtItemStack == null) {
-			System.out.println(name);
-			System.out.println(lore);
 			builtItemStack = new ItemBuilder(itemstack).setName(HexColor.translateColorCodes(name)).setLore(HexColor.translateColorCodes(lore)).setGlow(enchanted).build();
 		}
 		return builtItemStack;
@@ -123,11 +121,36 @@ public class Display implements ConfigurationSerializable {
 		Map<String, Object> map = new LinkedHashMap<>();
 		map.put("page", getPage());
 		map.put("slot", getSlot());
-		map.put("item", getItemstack());
+		map.put("item", removeItemMeta(getItemstack()));
 		map.put("name", getName());
 		map.put("lore", getLore());
 		map.put("enchanted", isEnchanted());
 		return map;
+	}
+
+	/*
+		Remove item meta to avoid duplicated meta information on config file.
+	 */
+	private ItemStack removeItemMeta(ItemStack itemstack){
+		ItemStack item = itemstack.clone();
+		if (item.hasItemMeta()) {
+			ItemMeta im = item.getItemMeta();
+			if (im.hasLore())
+				im.setLore(new ArrayList<>());
+			if (im.hasDisplayName())
+				im.setDisplayName("");
+			if(itemstack.hasItemFlag(ItemFlag.HIDE_ENCHANTS)) {
+				im.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
+				enchanted = true;
+				if(im.hasEnchants()){
+					for(Enchantment enchant : im.getEnchants().keySet()){
+						im.removeEnchant(enchant);
+					}
+				}
+			}
+			item.setItemMeta(im);
+		}
+		return item;
 	}
 
 }

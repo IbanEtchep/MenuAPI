@@ -65,7 +65,6 @@ public abstract class ConfigurableMenu<T> extends PaginatedMenu {
 						T t = getItemAtSlot(e.getSlot());
 						if(t != null) {
 							editing = t;
-							System.out.println(t);
 						}else e.setCancelled(true);
 						break;
 					}
