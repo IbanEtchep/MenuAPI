@@ -1,10 +1,7 @@
-package fr.iban.menuapi.objects;
+package fr.iban.menuapi.template;
 
 import fr.iban.menuapi.MenuItem;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Template {
@@ -14,9 +11,14 @@ public class Template {
 
     public Template(String name, Map<Integer, MenuItem> menuItems){
         this.menuItems = menuItems;
+        this.name = name;
     }
 
     public Map<Integer, MenuItem> getMenuItems() {
         return menuItems;
+    }
+
+    public String getName() {
+        return name;
     }
 }

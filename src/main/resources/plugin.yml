@@ -1,4 +1,8 @@
 name: MenuAPI
 version: ${project.version}
+author: Iban
 main: fr.iban.menuapi.MenuAPI
 api-version: 1.17
+
+commands:
+  menuapi:

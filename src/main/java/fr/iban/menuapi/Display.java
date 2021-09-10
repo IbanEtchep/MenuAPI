@@ -1,4 +1,4 @@
-package fr.iban.menuapi.objects;
+package fr.iban.menuapi;
 
 import java.util.*;
 
@@ -37,9 +37,6 @@ public class Display implements ConfigurationSerializable {
 
 	@SuppressWarnings("unchecked")
 	public Display(Map<String, Object> map) {
-//		for (String string : map.keySet()) {
-//			System.out.println(string);
-//		}
 		if(map.containsKey("page")) {
 			page = (int) map.get("page");
 		}
@@ -111,7 +108,7 @@ public class Display implements ConfigurationSerializable {
 
 	public ItemStack getBuiltItemStack() {
 		if(builtItemStack == null) {
-			builtItemStack = new ItemBuilder(itemstack).setName(HexColor.translateColorCodes(name)).setLore(HexColor.translateColorCodes(lore)).setGlow(enchanted).build();
+			builtItemStack = new ItemBuilder(itemstack).setName(HexColor.translateColorCodes(name)).setLore(lore == null ? new ArrayList<>() : HexColor.translateColorCodes(lore)).setGlow(enchanted).build();
 		}
 		return builtItemStack;
 	}
