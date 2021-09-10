@@ -4,14 +4,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import fr.iban.menuapi.objects.Template;
+import fr.iban.menuapi.template.Template;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import fr.iban.menuapi.MenuItem;
-import fr.iban.menuapi.objects.Display;
+import fr.iban.menuapi.Display;
 
 public class ConfigurableTemplate extends ConfigurableMenu<Integer>{
 
@@ -22,7 +22,7 @@ public class ConfigurableTemplate extends ConfigurableMenu<Integer>{
 
 	public ConfigurableTemplate(Player player, Plugin plugin, Template template) {
 		super(player);
-		this.name = name;
+		this.name = template.getName();
 		this.plugin = plugin;
 		this.config = plugin.getConfig();
 		this.configPath = "menus."+name;
@@ -72,6 +72,12 @@ public class ConfigurableTemplate extends ConfigurableMenu<Integer>{
 	protected void addItem(Display display) {
 		int id = Collections.max(getItems()) + 1;
 		setItemDisplay(id, display);
+	}
+
+	@Override
+	protected void removeItem(Integer integer) {
+		config.set(configPath+".items."+integer, null);
+		plugin.saveConfig();
 	}
 
 }
