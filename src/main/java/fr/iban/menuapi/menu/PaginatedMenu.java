@@ -36,11 +36,11 @@ public abstract class PaginatedMenu extends Menu {
 
 		MenuItem nextBotton = getNextBotton();
 		setMenuTemplateItem(lastRowFirst+5, nextBotton);
-		setMenuTemplateItem(lastRowFirst+5,new MenuItem(FILLER_GLASS, () -> !nextBotton.getDisplayCondition().getAsBoolean()));
+		//setMenuTemplateItem(lastRowFirst+5,new MenuItem(FILLER_GLASS, () -> !nextBotton.getDisplayCondition().getAsBoolean()));
 
 		MenuItem prevBotton = getPreviousBotton();
 		setMenuTemplateItem(lastRowFirst+3, prevBotton);
-		setMenuTemplateItem(lastRowFirst+3,new MenuItem(FILLER_GLASS, () -> !prevBotton.getDisplayCondition().getAsBoolean()));
+		//setMenuTemplateItem(lastRowFirst+3,new MenuItem(FILLER_GLASS, () -> !prevBotton.getDisplayCondition().getAsBoolean()));
 
 
 		setMenuTemplateItem(lastRowFirst+4, getCloseBotton());

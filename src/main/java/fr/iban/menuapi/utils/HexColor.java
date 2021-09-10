@@ -66,7 +66,6 @@ public enum HexColor {
     {
     	List<String> translated = new ArrayList<>();
     	for(String msg : message) {
-    		System.out.println(msg);
     		translated.add(translateColorCodes(msg));
     	}
     	return translated;

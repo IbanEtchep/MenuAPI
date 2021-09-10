@@ -3,7 +3,6 @@ package fr.iban.menuapi.template;
 import fr.iban.menuapi.Display;
 import fr.iban.menuapi.MenuAPI;
 import fr.iban.menuapi.MenuItem;
-import fr.iban.menuapi.template.Template;
 import org.bukkit.configuration.Configuration;
 
 import java.util.HashMap;
@@ -28,9 +27,9 @@ public class TemplateManager {
         if(config.getConfigurationSection("menus") != null){
             for(String name : config.getConfigurationSection("menus").getKeys(false)){
                 String configPath = "menus."+name;
-                Map<Integer, MenuItem> map = new HashMap<>();
+                Map<Integer, Display> map = new HashMap<>();
                 for(int slot : config.getConfigurationSection(configPath+".items").getKeys(false).stream().map(s -> Integer.parseInt(s)).toList()){
-                    map.put(slot, new MenuItem(((Display) config.get(configPath+".items."+slot)).getBuiltItemStack()));
+                    map.put(slot, ((Display) config.get(configPath+".items."+slot)));
                 }
                 templates.put(name, new Template(name, map));
             }
