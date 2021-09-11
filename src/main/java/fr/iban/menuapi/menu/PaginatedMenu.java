@@ -13,8 +13,6 @@ import fr.iban.menuapi.utils.ItemBuilder;
 
 public abstract class PaginatedMenu extends Menu {
 
-	protected int page = 0;
-
 	protected PaginatedMenu(Player player) {
 		super(player);
 	}

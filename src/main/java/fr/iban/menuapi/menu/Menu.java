@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,7 +37,7 @@ public abstract class Menu implements InventoryHolder {
 	protected Multimap<Integer, MenuItem> templateItems = ArrayListMultimap.create();
 	protected List<Integer> templateSlots;
 	protected Menu previousMenu;
-	private int lastInsert;
+	protected int page = 0;
 	private boolean loaded = false;
 
 	public Menu(Player player) {
@@ -262,6 +263,16 @@ public abstract class Menu implements InventoryHolder {
 		for (int i = getSlots() - 9; i < getSlots(); i++) {
 			setMenuTemplateItem(i, FILLER_GLASS);
 		}
+	}
+
+	protected void addItemAsync(MenuItem beforeLoaded, CompletableFuture<MenuItem> afterLoaded){
+		addMenuItem(beforeLoaded);
+		afterLoaded.thenAccept(item -> {
+			addMenuItem(item);
+			if(page == item.getPage() || item.getPage() == -1){
+				inventory.setItem(item.getSlot(), item.getItem());
+			}
+		});
 	}
 
 }

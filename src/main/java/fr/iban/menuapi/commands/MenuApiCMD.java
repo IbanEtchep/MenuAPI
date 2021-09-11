@@ -26,7 +26,7 @@ public class MenuApiCMD implements CommandExecutor {
                 player.sendMessage("/menuapi edittemplate <name>");
             }
             if(args.length >= 1){
-                if(args[0].equalsIgnoreCase("edittemplate")){
+                if(args[0].equalsIgnoreCase("opentemplate")){
                     String templateName = args[1];
                     TemplateManager templateManager = plugin.getTemplateManager();
                     if(!templateManager.getTemplates().containsKey(templateName)){
