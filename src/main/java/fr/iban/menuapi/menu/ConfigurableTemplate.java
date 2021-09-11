@@ -11,7 +11,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import fr.iban.menuapi.MenuItem;
-import fr.iban.menuapi.Display;
+import fr.iban.menuapi.ConfigurableItem;
 
 public class ConfigurableTemplate extends ConfigurableMenu<Integer>{
 
@@ -49,19 +49,19 @@ public class ConfigurableTemplate extends ConfigurableMenu<Integer>{
 	}
 
 	@Override
-	protected Display getItemDisplay(Integer integer) {
-		return (Display) config.get(configPath+".items."+integer);
+	protected ConfigurableItem getConfigurableItem(Integer integer) {
+		return (ConfigurableItem) config.get(configPath+".items."+integer);
 	}
 
 	@Override
-	protected void setItemDisplay(Integer integer, Display display) {
+	protected void setItemDisplay(Integer integer, ConfigurableItem display) {
 		config.set(configPath+".items."+integer, display);
 		plugin.saveConfig();
 	}
 
 	@Override
 	protected MenuItem getMenuItem(Integer integer) {
-		return new MenuItem(getItemDisplay(integer).getBuiltItemStack());
+		return new MenuItem(getConfigurableItem(integer));
 	}
 	
 	public Map<Integer, MenuItem> getMenuItems() {
@@ -69,7 +69,7 @@ public class ConfigurableTemplate extends ConfigurableMenu<Integer>{
 	}
 
 	@Override
-	protected void addItem(Display display) {
+	protected void addItem(ConfigurableItem display) {
 		int id = Collections.max(getItems()) + 1;
 		setItemDisplay(id, display);
 	}

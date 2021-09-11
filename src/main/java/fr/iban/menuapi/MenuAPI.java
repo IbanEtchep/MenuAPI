@@ -27,7 +27,7 @@ public final class MenuAPI extends JavaPlugin {
 		instance = this;
 		textInputs = new HashMap<>();
 		saveDefaultConfig();
-    	ConfigurationSerialization.registerClass(Display.class, "display");
+    	ConfigurationSerialization.registerClass(ConfigurableItem.class, "menuitem");
 		this.templateManager = new TemplateManager(this);
 		getCommand("menuapi").setExecutor(new MenuApiCMD(this));
     	registerListeners(new InventoryListener(), new AsyncChatListener(this));

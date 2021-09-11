@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.iban.menuapi.MenuAPI;
 import fr.iban.menuapi.MenuItem;
-import fr.iban.menuapi.Display;
+import fr.iban.menuapi.ConfigurableItem;
 
 public abstract class ConfigurableMenu<T> extends PaginatedMenu {
 
@@ -37,11 +37,11 @@ public abstract class ConfigurableMenu<T> extends PaginatedMenu {
 
 	protected abstract Collection<T> getItems();
 
-	protected abstract Display getItemDisplay(T object);
+	protected abstract ConfigurableItem getConfigurableItem(T object);
 
-	protected abstract void setItemDisplay(T object, Display display);
+	protected abstract void setItemDisplay(T object, ConfigurableItem display);
 
-	protected abstract void addItem(Display display);
+	protected abstract void addItem(ConfigurableItem display);
 
 	protected abstract void removeItem(T item);
 
@@ -49,7 +49,7 @@ public abstract class ConfigurableMenu<T> extends PaginatedMenu {
 
 	private T getItemAtSlot(int slot) {
 		for(T t : getItems()) {
-			Display display = getItemDisplay(t);
+			ConfigurableItem display = getConfigurableItem(t);
 			if(display.getSlot() != slot || display.getPage() != page) continue;
 			return t;
 		}
@@ -59,8 +59,7 @@ public abstract class ConfigurableMenu<T> extends PaginatedMenu {
 	@Override
 	public void setMenuItems() {
 		for(T item : getItems()) {
-			Display display = getItemDisplay(item);
-			setMenuItem(display.getSlot()+getSlots()*display.getPage(), getMenuItem(item));
+			addMenuItem(getMenuItem(item));
 		}
 	}
 
@@ -94,13 +93,13 @@ public abstract class ConfigurableMenu<T> extends PaginatedMenu {
 						{
 							if(e.getCurrentItem() == null) {
 								if(editing != null) {
-									Display display = getItemDisplay(editing);
-									display.setSlot(e.getSlot());
-									display.setPage(page);
-									setItemDisplay(editing, display);
+									ConfigurableItem configurableItem = getConfigurableItem(editing);
+									configurableItem.setSlot(e.getSlot());
+									configurableItem.setPage(page);
+									setItemDisplay(editing, configurableItem);
 								}else if(pickup != null){
 									player.closeInventory();
-									Display display = new Display();
+									ConfigurableItem display = new ConfigurableItem();
 									display.setPage(page);
 									display.setSlot(e.getSlot());
 									display.setItemstack(pickup);
@@ -134,10 +133,10 @@ public abstract class ConfigurableMenu<T> extends PaginatedMenu {
 							if(cursor != null && cursor.getType() != Material.AIR){
 								T t = getItemAtSlot(e.getSlot());
 								if(t != null) {
-									Display display = getItemDisplay(t);
-									player.sendMessage("§aChangement de l'icone : " +display.getItemstack().getType() + " -> " + cursor.getType());
-									display.setItemstack(cursor);
-									setItemDisplay(t, display);
+									ConfigurableItem configurableItem = getConfigurableItem(t);
+									player.sendMessage("§aChangement de l'icone : " +configurableItem.getItemstack().getType() + " -> " + cursor.getType());
+									configurableItem.setItemstack(cursor);
+									setItemDisplay(t, configurableItem);
 									reload();
 								}
 							}

@@ -20,8 +20,8 @@ public abstract class LazyPaginatedMenu<T> extends PaginatedMenu {
 	}
 
 	@Override
-	protected MenuItem getNextBotton() {
-		return new MenuItem(new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setName(ChatColor.GREEN + "Suivant").build(), click -> {
+	protected MenuItem getNextBotton(int slot) {
+		return new MenuItem(slot, new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setName(ChatColor.GREEN + "Suivant").build(), click -> {
 			page += 1;
 			open();
 		}, () -> (!(lazyObjectList.isEmpty() || lazyObjectList.size() <= (getSlots()-templateSlots.size())) || page != getLastPage()));
