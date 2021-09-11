@@ -34,27 +34,24 @@ public abstract class PaginatedMenu extends Menu {
 	protected void addMenuBottons() {
 		int lastRowFirst = (getRows()-1)*9;
 
-		MenuItem nextBotton = getNextBotton();
-		setMenuTemplateItem(lastRowFirst+5, nextBotton);
+		setMenuTemplateItem(getNextBotton(lastRowFirst+5));
 		//setMenuTemplateItem(lastRowFirst+5,new MenuItem(FILLER_GLASS, () -> !nextBotton.getDisplayCondition().getAsBoolean()));
 
-		MenuItem prevBotton = getPreviousBotton();
-		setMenuTemplateItem(lastRowFirst+3, prevBotton);
+		setMenuTemplateItem(getPreviousBotton(lastRowFirst+3));
 		//setMenuTemplateItem(lastRowFirst+3,new MenuItem(FILLER_GLASS, () -> !prevBotton.getDisplayCondition().getAsBoolean()));
 
-
-		setMenuTemplateItem(lastRowFirst+4, getCloseBotton());
+		setMenuTemplateItem(getCloseBotton(lastRowFirst+4));
 	}
 
-	protected MenuItem getNextBotton() {
-		return new MenuItem(new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setName(ChatColor.GREEN + "Suivant").build(), click -> {
+	protected MenuItem getNextBotton(int slot) {
+		return new MenuItem(slot, new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setName(ChatColor.GREEN + "Suivant").build(), click -> {
 			page += 1;
 			open();
 		}, () -> page != getLastPage());
 	}
 
-	protected MenuItem getPreviousBotton() {
-		return new MenuItem(new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setName(ChatColor.GREEN + "Précédent").build(), click -> {
+	protected MenuItem getPreviousBotton(int slot) {
+		return new MenuItem(slot, new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setName(ChatColor.GREEN + "Précédent").build(), click -> {
 			page -= 1;
 			open();
 		}, () -> page != 0);
@@ -99,16 +96,6 @@ public abstract class PaginatedMenu extends Menu {
 	protected int getLastPage() {
 		if(menuItems.isEmpty()) return 0;
 		return Collections.max(menuItems.keySet())/getSlots();
-	}
-
-	protected void setMenuItem(int page, int row, int coll, MenuItem item) {
-		int slot = row*9 + coll;
-		setMenuItem(page, slot, item);
-	}
-
-	@Override
-	protected void setMenuItem(int page, int slot, MenuItem item) {
-		setMenuItem(page*getSlots()+slot, item);
 	}
 }
 

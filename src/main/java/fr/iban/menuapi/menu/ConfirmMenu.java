@@ -55,31 +55,28 @@ public class ConfirmMenu extends Menu {
 
 	@Override
 	public void setMenuItems() {
-		MenuItem confirmItem = getConfirmItem();
-		MenuItem cancelItem = getCancelItem();
-		MenuItem middleItem = getMiddleItem();
 		for (int i = 0; i < getSlots(); i++) {
 			int rowSlot = (i+9) % 9;
 			if(rowSlot < 4) {
-				setMenuItem(i, confirmItem);
+				addMenuItem(getConfirmItem(i));
 			}else if(rowSlot > 4) {
-				setMenuItem(i, cancelItem);
+				addMenuItem(getCancelItem(i));
 			}else {
-				setMenuItem(i, middleItem);
+				addMenuItem(getMiddleItem(i));
 			}
 		}
 	}
 
-	private MenuItem getConfirmItem(){
-		return new MenuItem(new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setDisplayName("§2§lCONFIRMER").build(), e -> callback.call(true));
+	private MenuItem getConfirmItem(int slot){
+		return new MenuItem(slot, new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setDisplayName("§2§lCONFIRMER").build(), e -> callback.call(true));
 	}
 	
-	private MenuItem getCancelItem() {
-		return new MenuItem(new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("§4§lANNULER").build(), e -> callback.call(false));
+	private MenuItem getCancelItem(int slot) {
+		return new MenuItem(slot, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("§4§lANNULER").build(), e -> callback.call(false));
 	}
 	
-	private MenuItem getMiddleItem() {
-		return new MenuItem(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setDisplayName(desc).build());
+	private MenuItem getMiddleItem(int slot) {
+		return new MenuItem(slot, new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setDisplayName(desc).build());
 	}
 
 	@Override

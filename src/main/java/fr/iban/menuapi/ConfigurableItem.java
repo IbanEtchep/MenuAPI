@@ -14,8 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import fr.iban.menuapi.utils.HexColor;
 import fr.iban.menuapi.utils.ItemBuilder;
 
-@SerializableAs("display")
-public class Display implements ConfigurationSerializable {
+@SerializableAs("menuitem")
+public class ConfigurableItem implements ConfigurationSerializable {
 
 	private int page = -1;
 	private int slot = -1;
@@ -26,7 +26,7 @@ public class Display implements ConfigurationSerializable {
 	private ItemStack builtItemStack;
 
 
-	public Display(int page, int slot, ItemStack itemstack, String name, List<String> lore, boolean enchanted) {
+	public ConfigurableItem(int page, int slot, ItemStack itemstack, String name, List<String> lore, boolean enchanted) {
 		this.page = page;
 		this.slot = slot;
 		this.itemstack = removeItemMeta(itemstack);
@@ -36,7 +36,7 @@ public class Display implements ConfigurationSerializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Display(Map<String, Object> map) {
+	public ConfigurableItem(Map<String, Object> map) {
 		if(map.containsKey("page")) {
 			page = (int) map.get("page");
 		}
@@ -57,7 +57,7 @@ public class Display implements ConfigurationSerializable {
 		}
 	}
 
-	public Display() {
+	public ConfigurableItem() {
 		this(-1, -1, new ItemStack(Material.DIRT), "No name", Arrays.asList("NoDesc", "Nodesc"), false);
 	}
 
