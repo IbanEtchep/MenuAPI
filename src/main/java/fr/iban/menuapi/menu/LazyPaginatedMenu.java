@@ -33,18 +33,7 @@ public abstract class LazyPaginatedMenu<T> extends PaginatedMenu {
 
 	@Override
 	protected void fillInventory() {
-		fillTemplateItems();
-
-		int startslot = page*getSlots();
-		int endslot = (page+1)*getSlots();
-
-		for (int i = startslot; i < endslot; i++) {
-			int slot = i - page*getSlots();
-			MenuItem menuItem = menuItems.get(i);
-			if(menuItem == null || !menuItem.getDisplayCondition().getAsBoolean()) continue;
-			inventory.setItem(slot, menuItem.getItem());
-			slot++;
-		}
+		super.fillInventory();
 
 		int firstEmpty = inventory.firstEmpty();
 		while(firstEmpty != -1 && !lazyObjectList.isEmpty()) {

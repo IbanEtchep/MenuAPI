@@ -87,13 +87,13 @@ public abstract class Menu implements InventoryHolder {
 	
 	public void handleMenuClick(InventoryClickEvent e) {
 		if(e.getClickedInventory() == e.getView().getTopInventory()) {
-			int slot = e.getSlot();
+			int slot = page*getSlots()+e.getSlot();
 			MenuItem item = menuItems.get(slot);
 			if(item != null && item.getCallback() != null && item.getDisplayCondition().getAsBoolean()) {
 				item.getCallback().onClick(e);
 				return;
 			}
-			for(MenuItem templateItem : templateItems.get(slot)) {
+			for(MenuItem templateItem : templateItems.get(e.getSlot())) {
 				if(templateItem != null && templateItem.getCallback() != null && templateItem.getDisplayCondition().getAsBoolean()) {
 					templateItem.getCallback().onClick(e);
 				}
