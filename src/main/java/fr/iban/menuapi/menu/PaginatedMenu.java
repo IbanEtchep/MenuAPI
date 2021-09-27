@@ -74,23 +74,6 @@ public abstract class PaginatedMenu extends Menu {
 	}
 
 
-	@Override
-	public void handleMenuClick(InventoryClickEvent e) {
-		if(e.getClickedInventory() == e.getView().getTopInventory()) {
-			int slot = page*getSlots()+e.getSlot();
-			MenuItem item = menuItems.get(slot);
-			if(item != null && item.getCallback() != null && item.getDisplayCondition().getAsBoolean()) {
-				item.getCallback().onClick(e);
-				return;
-			}
-			for(MenuItem templateItem : templateItems.get(e.getSlot())) {
-				if(templateItem != null && templateItem.getCallback() != null && templateItem.getDisplayCondition().getAsBoolean()) {
-					templateItem.getCallback().onClick(e);
-				}
-			}
-		}
-	}
-
 	protected int getLastPage() {
 		if(menuItems.isEmpty()) return 0;
 		return Collections.max(menuItems.keySet())/getSlots();

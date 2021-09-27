@@ -41,19 +41,6 @@ public class ConfirmMenu extends Menu {
 	}
 
 	@Override
-	public void handleMenuClick(InventoryClickEvent e) {
-		ItemStack clicked = e.getCurrentItem();
-
-		if(clicked == null) return;
-
-		if(clicked.getType() == Material.GREEN_STAINED_GLASS_PANE) {
-			callback.call(true);
-		}else if(clicked.getType() == Material.RED_STAINED_GLASS_PANE) {
-			callback.call(false);
-		}
-	}
-
-	@Override
 	public void setMenuItems() {
 		for (int i = 0; i < getSlots(); i++) {
 			int rowSlot = (i+9) % 9;

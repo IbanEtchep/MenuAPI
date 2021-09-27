@@ -23,16 +23,22 @@ public class ConfigurableItem implements ConfigurationSerializable {
 	private String name;
 	private List<String> lore;
 	private boolean enchanted = false;
-	private ItemStack builtItemStack;
+	//private ItemStack builtItemStack;
+	private List<String> clickCommands;
 
 
-	public ConfigurableItem(int page, int slot, ItemStack itemstack, String name, List<String> lore, boolean enchanted) {
+	public ConfigurableItem(int page, int slot, ItemStack itemstack, String name, List<String> lore, boolean enchanted, List<String> clickCommands) {
 		this.page = page;
 		this.slot = slot;
 		this.itemstack = removeItemMeta(itemstack);
 		this.name = name;
 		this.lore = lore;
 		this.enchanted = enchanted;
+		this.clickCommands = clickCommands;
+	}
+
+	public ConfigurableItem(ConfigurableItem item){
+		this(item.getPage(), item.getSlot(), item.getItemstack(), item.getName(), item.getLore(), item.isEnchanted(), item.getClickCommands());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -52,13 +58,16 @@ public class ConfigurableItem implements ConfigurationSerializable {
 		if(map.containsKey("lore")) {
 			lore = (List<String>) map.get("lore");
 		}
+		if(map.containsKey("commands")) {
+			clickCommands = (List<String>) map.get("commands");
+		}
 		if(map.containsKey("enchanted")) {
 			enchanted = (boolean)map.get("enchanted");
 		}
 	}
 
 	public ConfigurableItem() {
-		this(-1, -1, new ItemStack(Material.DIRT), "No name", Arrays.asList("NoDesc", "Nodesc"), false);
+		this(-1, -1, new ItemStack(Material.DIRT), "No name", Arrays.asList("NoDesc", "Nodesc"), false, null);
 	}
 
 	public ItemStack getItemstack() {
@@ -66,7 +75,6 @@ public class ConfigurableItem implements ConfigurationSerializable {
 	}
 
 	public void setItemstack(ItemStack item) {
-		this.builtItemStack = null;
 		this.itemstack = removeItemMeta(item);
 	}
 
@@ -106,12 +114,20 @@ public class ConfigurableItem implements ConfigurationSerializable {
 		return enchanted;
 	}
 
-	public ItemStack getBuiltItemStack() {
-		if(builtItemStack == null) {
-			builtItemStack = new ItemBuilder(itemstack).setName(HexColor.translateColorCodes(name)).setLore(lore == null ? new ArrayList<>() : HexColor.translateColorCodes(lore)).setGlow(enchanted).build();
-		}
-		return builtItemStack;
+	public List<String> getClickCommands() {
+		return clickCommands;
 	}
+
+	public ItemStack getBuiltItemStack() {
+//		if(builtItemStack == null) {
+//			builtItemStack = new ItemBuilder(itemstack).setName(HexColor.translateColorCodes(name)).setLore(lore == null ? new ArrayList<>() : HexColor.translateColorCodes(lore)).setGlow(enchanted).build();
+//		}
+		return new ItemBuilder(itemstack).setName(HexColor.translateColorCodes(name)).setLore(lore == null ? new ArrayList<>() : HexColor.translateColorCodes(lore)).setGlow(enchanted).build();
+	}
+
+//	public void setBuiltItemStack(ItemStack builtItemStack) {
+//		this.builtItemStack = builtItemStack;
+//	}
 
 	@Override
 	public @NotNull Map<String, Object> serialize() {
@@ -122,6 +138,7 @@ public class ConfigurableItem implements ConfigurationSerializable {
 		map.put("name", getName());
 		map.put("lore", getLore());
 		map.put("enchanted", isEnchanted());
+		map.put("commands", clickCommands);
 		return map;
 	}
 
