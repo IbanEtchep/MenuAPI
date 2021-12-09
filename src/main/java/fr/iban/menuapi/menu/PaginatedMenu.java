@@ -5,9 +5,8 @@ import java.util.Collections;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 
-import fr.iban.menuapi.MenuItem;
+import fr.iban.menuapi.menuitem.MenuItem;
 import fr.iban.menuapi.utils.ItemBuilder;
 
 
@@ -32,27 +31,46 @@ public abstract class PaginatedMenu extends Menu {
 	protected void addMenuBottons() {
 		int lastRowFirst = (getRows()-1)*9;
 
-		setMenuTemplateItem(getNextBotton(lastRowFirst+5));
-		//setMenuTemplateItem(lastRowFirst+5,new MenuItem(FILLER_GLASS, () -> !nextBotton.getDisplayCondition().getAsBoolean()));
+		MenuItem nextButton = getNextBotton();
+		if(nextButton.getSlot() == -1){
+			nextButton.setSlot(lastRowFirst+5);
+		}
+		setMenuTemplateItem(nextButton);
 
-		setMenuTemplateItem(getPreviousBotton(lastRowFirst+3));
+		MenuItem prevButton = getPreviousBotton();
+		if(prevButton.getSlot() == -1){
+			prevButton.setSlot(lastRowFirst+3);
+		}
+		setMenuTemplateItem(getPreviousBotton().setSlot(lastRowFirst+3));
 		//setMenuTemplateItem(lastRowFirst+3,new MenuItem(FILLER_GLASS, () -> !prevBotton.getDisplayCondition().getAsBoolean()));
 
-		setMenuTemplateItem(getCloseBotton(lastRowFirst+4));
+		setCloseButton(lastRowFirst+4);
 	}
 
-	protected MenuItem getNextBotton(int slot) {
-		return new MenuItem(slot, new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setName(ChatColor.GREEN + "Suivant").build(), click -> {
-			page += 1;
-			open();
-		}, () -> page != getLastPage());
+	protected MenuItem getNextBotton() {
+		return new MenuItem(-1, new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setName(ChatColor.GREEN + "Suivant").build())
+				.setClickCallback(click -> {
+					page += 1;
+					open();
+				})
+				.setDisplayCondition(() -> page != getLastPage());
 	}
 
-	protected MenuItem getPreviousBotton(int slot) {
-		return new MenuItem(slot, new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setName(ChatColor.GREEN + "Précédent").build(), click -> {
-			page -= 1;
-			open();
-		}, () -> page != 0);
+	protected void setNextPageButton(int slot){
+		addMenuItem(new MenuItem(slot, -1, new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setName(ChatColor.GREEN + "Suivant").build())
+				.setClickCallback(click -> {
+					page += 1;
+					open();
+				})
+				.setDisplayCondition(() -> page != getLastPage()));
+	}
+
+	protected MenuItem getPreviousBotton() {
+		return new MenuItem(-1, new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setName(ChatColor.GREEN + "Précédent").build())
+				.setClickCallback(click -> {
+					page -= 1;
+					open();
+				}).setDisplayCondition(() -> page != 0);
 	}
 
 	/*
@@ -67,8 +85,8 @@ public abstract class PaginatedMenu extends Menu {
 		for (int i = startslot; i < endslot; i++) {
 			int slot = i - page*getSlots();
 			MenuItem menuItem = menuItems.get(i);
-			if(menuItem == null || !menuItem.getDisplayCondition().getAsBoolean()) continue;
-			inventory.setItem(slot, menuItem.getItem());
+			if(menuItem == null || !menuItem.isDisplayable()) continue;
+			inventory.setItem(slot, menuItem.getItemStack());
 			slot++;
 		}
 	}

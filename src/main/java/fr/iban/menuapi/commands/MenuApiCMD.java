@@ -23,7 +23,7 @@ public class MenuApiCMD implements CommandExecutor {
         if(sender instanceof Player){
             Player player = (Player)sender;
             if(args.length == 0){
-                player.sendMessage("/menuapi edittemplate <name>");
+                player.sendMessage("/menuapi opentemplate <name>");
             }
             if(args.length >= 1){
                 if(args[0].equalsIgnoreCase("opentemplate")){

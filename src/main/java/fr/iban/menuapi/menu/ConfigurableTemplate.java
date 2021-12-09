@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-import fr.iban.menuapi.MenuItem;
-import fr.iban.menuapi.ConfigurableItem;
+import fr.iban.menuapi.menuitem.MenuItem;
+import fr.iban.menuapi.menuitem.ConfigurableItem;
 
 public class ConfigurableTemplate extends ConfigurableMenu<Integer>{
 
@@ -39,11 +39,6 @@ public class ConfigurableTemplate extends ConfigurableMenu<Integer>{
 	}
 
 	@Override
-	public void setMenuTemplateItems() {
-		
-	}
-
-	@Override
 	protected Collection<Integer> getItems() {
 		return config.getConfigurationSection(configPath+".items").getKeys(false).stream().map(s -> Integer.parseInt(s)).toList();
 	}
@@ -61,7 +56,7 @@ public class ConfigurableTemplate extends ConfigurableMenu<Integer>{
 
 	@Override
 	protected MenuItem getMenuItem(Integer integer) {
-		return new MenuItem(getConfigurableItem(integer));
+		return getConfigurableItem(integer);
 	}
 	
 	public Map<Integer, MenuItem> getMenuItems() {

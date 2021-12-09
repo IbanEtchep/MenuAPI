@@ -1,6 +1,6 @@
 package fr.iban.menuapi.template;
 
-import fr.iban.menuapi.ConfigurableItem;
+import fr.iban.menuapi.menuitem.ConfigurableItem;
 
 import java.util.Map;
 

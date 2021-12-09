@@ -21,7 +21,7 @@ public class AsyncChatListener implements Listener {
 	public void onChat(AsyncPlayerChatEvent e) {
 		Player player = e.getPlayer();
 		if(plugin.getTextInputs().containsKey(player.getUniqueId())) {
-			Bukkit.getScheduler().runTask(plugin, () -> plugin.getTextInputs().get(player.getUniqueId()).call(e.getMessage()));
+			Bukkit.getScheduler().runTask(plugin, () -> plugin.getTextInputs().get(player.getUniqueId()).accept(e.getMessage()));
 			e.setCancelled(true);
 			return;
 		}
