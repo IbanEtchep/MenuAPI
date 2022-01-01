@@ -1,33 +1,33 @@
-package fr.iban.menuapi;
+package fr.iban.menuapi.menuitem;
 
-import java.util.*;
-
+import fr.iban.menuapi.utils.HexColor;
+import fr.iban.menuapi.utils.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import fr.iban.menuapi.utils.HexColor;
-import fr.iban.menuapi.utils.ItemBuilder;
+import java.util.*;
 
 @SerializableAs("menuitem")
-public class ConfigurableItem implements ConfigurationSerializable {
+public class ConfigurableItem extends MenuItem implements ConfigurationSerializable {
 
-	private int page = -1;
-	private int slot = -1;
-	private ItemStack itemstack;
 	private String name;
 	private List<String> lore;
 	private boolean enchanted = false;
-	//private ItemStack builtItemStack;
-	private List<String> clickCommands;
+	private List<String> clickCommands = new ArrayList<>();
+	private String clickPermission;
 
 
-	public ConfigurableItem(int page, int slot, ItemStack itemstack, String name, List<String> lore, boolean enchanted, List<String> clickCommands) {
+	public ConfigurableItem(int page, int slot, ItemStack itemstack, String name, List<String> lore, boolean enchanted, List<String> clickCommands, String clickPermission) {
+		super();
 		this.page = page;
 		this.slot = slot;
 		this.itemstack = removeItemMeta(itemstack);
@@ -35,14 +35,16 @@ public class ConfigurableItem implements ConfigurationSerializable {
 		this.lore = lore;
 		this.enchanted = enchanted;
 		this.clickCommands = clickCommands;
+		this.clickPermission = clickPermission;
 	}
 
 	public ConfigurableItem(ConfigurableItem item){
-		this(item.getPage(), item.getSlot(), item.getItemstack(), item.getName(), item.getLore(), item.isEnchanted(), item.getClickCommands());
+		this(item.getPage(), item.getSlot(), item.getItemStack(), item.getName(), item.getLore(), item.isEnchanted(), item.getClickCommands(), item.getClickPermission());
 	}
 
 	@SuppressWarnings("unchecked")
 	public ConfigurableItem(Map<String, Object> map) {
+		super();
 		if(map.containsKey("page")) {
 			page = (int) map.get("page");
 		}
@@ -64,14 +66,40 @@ public class ConfigurableItem implements ConfigurationSerializable {
 		if(map.containsKey("enchanted")) {
 			enchanted = (boolean)map.get("enchanted");
 		}
+		if(map.containsKey("clickpermission")){
+			this.clickPermission = (String) map.get("clickpermission");
+		}
 	}
 
 	public ConfigurableItem() {
-		this(-1, -1, new ItemStack(Material.DIRT), "No name", Arrays.asList("NoDesc", "Nodesc"), false, null);
+		this(-1, -1, new ItemStack(Material.DIRT), "No name", Arrays.asList("NoDesc", "Nodesc"), false, null, null);
 	}
 
-	public ItemStack getItemstack() {
-		return itemstack;
+	@Override
+	public void onClick(InventoryClickEvent e) {
+		Player player = (Player) e.getWhoClicked();
+		if(clickPermission != null && !player.hasPermission(clickPermission)){
+			player.sendMessage("§cVous n'avez pas la permission de cliquer sur ce bouton.");
+			return;
+		}
+
+		if(clickCommands.isEmpty()){
+			for(String command : getClickCommands()){
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.getName()));
+			}
+		}
+		super.onClick(e);
+	}
+
+	@Override
+	public boolean isDisplayable() {
+		return super.isDisplayable();
+	}
+
+
+	@Override
+	public ItemStack getItemStack() {
+		return new ItemBuilder(itemstack).setName(HexColor.translateColorCodes(name)).setLore(lore == null ? new ArrayList<>() : HexColor.translateColorCodes(lore)).setGlow(enchanted).build();
 	}
 
 	public void setItemstack(ItemStack item) {
@@ -106,10 +134,6 @@ public class ConfigurableItem implements ConfigurationSerializable {
 		return slot;
 	}
 
-	public void setSlot(int slot) {
-		this.slot = slot;
-	}
-
 	public boolean isEnchanted() {
 		return enchanted;
 	}
@@ -118,27 +142,25 @@ public class ConfigurableItem implements ConfigurationSerializable {
 		return clickCommands;
 	}
 
-	public ItemStack getBuiltItemStack() {
-//		if(builtItemStack == null) {
-//			builtItemStack = new ItemBuilder(itemstack).setName(HexColor.translateColorCodes(name)).setLore(lore == null ? new ArrayList<>() : HexColor.translateColorCodes(lore)).setGlow(enchanted).build();
-//		}
-		return new ItemBuilder(itemstack).setName(HexColor.translateColorCodes(name)).setLore(lore == null ? new ArrayList<>() : HexColor.translateColorCodes(lore)).setGlow(enchanted).build();
+	public String getClickPermission() {
+		return clickPermission;
 	}
-
-//	public void setBuiltItemStack(ItemStack builtItemStack) {
-//		this.builtItemStack = builtItemStack;
-//	}
 
 	@Override
 	public @NotNull Map<String, Object> serialize() {
 		Map<String, Object> map = new LinkedHashMap<>();
 		map.put("page", getPage());
 		map.put("slot", getSlot());
-		map.put("item", removeItemMeta(getItemstack()));
+		map.put("item", removeItemMeta(itemstack));
 		map.put("name", getName());
 		map.put("lore", getLore());
 		map.put("enchanted", isEnchanted());
-		map.put("commands", clickCommands);
+		if(clickCommands != null && !clickCommands.isEmpty()){
+			map.put("commands", clickCommands);
+		}
+		if(clickPermission != null){
+			map.put("clickpermission", clickPermission);
+		}
 		return map;
 	}
 

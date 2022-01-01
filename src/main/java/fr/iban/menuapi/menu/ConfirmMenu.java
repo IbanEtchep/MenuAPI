@@ -1,29 +1,29 @@
 package fr.iban.menuapi.menu;
 
-import fr.iban.menuapi.MenuItem;
+import fr.iban.menuapi.menuitem.MenuItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 
-import fr.iban.menuapi.callbacks.ConfirmCallback;
 import fr.iban.menuapi.utils.ItemBuilder;
+import org.bukkit.event.inventory.InventoryClickEvent;
+
+import java.util.function.Consumer;
 
 public class ConfirmMenu extends Menu {
 	
 	private String title;
 	private String desc;
-	private ConfirmCallback callback;
+	private Consumer<Boolean> callback;
 
-	public ConfirmMenu(Player player, ConfirmCallback callback) {
+	public ConfirmMenu(Player player, Consumer<Boolean> callback) {
 		this(player, "§2Confirmer", "§aVoulez-vous vraiment faire cela?", callback);
 	}
 	
-	public ConfirmMenu(Player player, String desc, ConfirmCallback callback) {
+	public ConfirmMenu(Player player, String desc, Consumer<Boolean> callback) {
 		this(player, "§2Confirmer", desc, callback);
 	}
 	
-	public ConfirmMenu(Player player, String title, String desc, ConfirmCallback callback) {
+	public ConfirmMenu(Player player, String title, String desc, Consumer<Boolean> callback) {
 		super(player);
 		this.title = title;
 		this.desc = desc;
@@ -55,21 +55,17 @@ public class ConfirmMenu extends Menu {
 	}
 
 	private MenuItem getConfirmItem(int slot){
-		return new MenuItem(slot, new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setDisplayName("§2§lCONFIRMER").build(), e -> callback.call(true));
+		return new MenuItem(slot, new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setDisplayName("§2§lCONFIRMER").build())
+				.setClickCallback(e -> callback.accept(true));
 	}
 	
 	private MenuItem getCancelItem(int slot) {
-		return new MenuItem(slot, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("§4§lANNULER").build(), e -> callback.call(false));
+		return new MenuItem(slot, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("§4§lANNULER").build())
+				.setClickCallback(e -> callback.accept(false));
 	}
 	
 	private MenuItem getMiddleItem(int slot) {
 		return new MenuItem(slot, new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setDisplayName(desc).build());
-	}
-
-	@Override
-	public void setMenuTemplateItems() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 

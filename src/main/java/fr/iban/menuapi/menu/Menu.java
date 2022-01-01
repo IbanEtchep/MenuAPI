@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -23,7 +23,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-import fr.iban.menuapi.MenuItem;
+import fr.iban.menuapi.menuitem.MenuItem;
 import fr.iban.menuapi.utils.ItemBuilder;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
@@ -44,29 +44,23 @@ public abstract class Menu implements InventoryHolder {
 		this.player = player;
 	}
 
-	public Menu(Player player, Menu previousMenu) {
-		this(player);
-		this.previousMenu = previousMenu;
-	}
-
 	public void open() {
 		if(!loaded) {
 			inventory = Bukkit.createInventory(this, getSlots(), LegacyComponentSerializer.builder().hexColors().build().deserialize(getMenuName()));
-			this.setMenuTemplateItems();
-			this.templateSlots= getTemplateSlots();
 			this.setMenuItems();
+			this.templateSlots= getTemplateSlots();
 			this.loaded = true;
 		}
 		inventory.clear();
 		fillInventory();
 		player.openInventory(inventory);
 	}
-	
+
 	public void reload() {
 		loaded = false;
 		open();
 	}
-	
+
 	@Override
 	public Inventory getInventory() {
 		return inventory;
@@ -80,27 +74,27 @@ public abstract class Menu implements InventoryHolder {
 		return getRows()*9;
 	}
 
-	
+
 	/*
-	 * Handle Events : 
+	 * Handle Events :
 	 */
-	
+
 	public void handleMenuClick(InventoryClickEvent e) {
 		if(e.getClickedInventory() == e.getView().getTopInventory()) {
 			int slot = page*getSlots()+e.getSlot();
 			MenuItem item = menuItems.get(slot);
-			if(item != null && item.getCallback() != null && item.getDisplayCondition().getAsBoolean()) {
-				item.getCallback().onClick(e);
+			if(item != null) {
+				item.onClick(e);
 				return;
 			}
 			for(MenuItem templateItem : templateItems.get(e.getSlot())) {
-				if(templateItem != null && templateItem.getCallback() != null && templateItem.getDisplayCondition().getAsBoolean()) {
-					templateItem.getCallback().onClick(e);
+				if(templateItem != null) {
+					templateItem.onClick(e);
 				}
 			}
 		}
 	}
-	
+
 	public boolean cancelClicks() {
 		return true;
 	}
@@ -114,9 +108,9 @@ public abstract class Menu implements InventoryHolder {
 	protected void fillTemplateItems() {
 		for (int i = 0; i < getSlots(); i++) {
 			for(MenuItem templateItem : templateItems.get(i)) {
-				if(!templateItem.getDisplayCondition().getAsBoolean())
+				if(!templateItem.isDisplayable())
 					continue;
-				inventory.setItem(i, templateItem.getItem());
+				inventory.setItem(i, templateItem.getItemStack());
 			}
 		}
 	}
@@ -125,26 +119,13 @@ public abstract class Menu implements InventoryHolder {
 		for (int i = 0; i < getSlots(); i++) {
 			MenuItem menuItem = menuItems.get(i);
 			if(menuItem == null) continue;
-			inventory.setItem(i, menuItem.getItem());
+			inventory.setItem(i, menuItem.getItemStack());
 		}
 	}
 
 	protected void fillInventory() {
 		fillTemplateItems();
 		fillItems();
-	}
-
-
-	protected MenuItem getCloseBotton(int slot) {
-		if(hasPreviousMenu()) {
-			return new MenuItem(slot, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName(ChatColor.DARK_RED + "Retour").build(), click -> {
-				previousMenu.open();
-			});
-		}else {
-			return new MenuItem(slot, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName(ChatColor.DARK_RED + "Fermer").build(), click -> {
-				player.closeInventory();
-			});
-		}
 	}
 
 	protected boolean hasPreviousMenu() {
@@ -166,22 +147,20 @@ public abstract class Menu implements InventoryHolder {
 	 * MenuItems methods
 	 */
 
-	protected void addMenuItem(int slot, ItemStack item){
-		menuItems.put(slot, new MenuItem(slot, item));
-	}
-
 	protected void addMenuItem(MenuItem item) {
 		menuItems.put(item.getSlot(), item);
 	}
 
-//	protected void addMenuItem(MenuItem item) {
-//		int i = lastInsert;
-//		while(menuItems.keySet().contains(i) || isTemplateSlot(i)) {
-//			i++;
-//		}
-//		menuItems.put(i, item);
-//		lastInsert = i;
-//	}
+	protected void addItemAsync(MenuItem beforeLoaded, CompletableFuture<MenuItem> afterLoaded){
+		addMenuItem(beforeLoaded);
+		afterLoaded.thenAccept(item -> {
+			addMenuItem(item);
+			if(page == item.getPage() || item.getPage() == -1){
+				inventory.setItem(item.getSlot(), item.getItemStack());
+			}
+		});
+	}
+
 
 	/*
 	 * Menu template methods
@@ -195,11 +174,20 @@ public abstract class Menu implements InventoryHolder {
 		templateItems.put(slot, new MenuItem(slot, item));
 	}
 
-	public abstract void setMenuTemplateItems();
+	protected void setTemplateItemAsync(MenuItem beforeLoaded, CompletableFuture<MenuItem> afterLoaded){
+		setMenuTemplateItem(beforeLoaded);
+		afterLoaded.thenAccept(item -> {
+			setMenuTemplateItem(item);
+			if(page == item.getPage() || item.getPage() == -1){
+				inventory.setItem(item.getSlot(), item.getItemStack());
+			}
+		});
+	}
 
 	public boolean isTemplateSlot(int slot) {
 		return templateSlots.contains(slot) ;
 	}
+
 
 	/*
 	 * Utils
@@ -235,10 +223,23 @@ public abstract class Menu implements InventoryHolder {
 			inventory.setItem(i, FILLER_GLASS);
 		}
 	}
-	
+
 	protected String centerTitle(String title) {
-	    return Strings.repeat(" ", 22 - ChatColor.stripColor(title).length()) + title;
+		return Strings.repeat(" ", 22 - ChatColor.stripColor(title).length()) + title;
 	}
+
+	protected MenuItem getCloseBotton(int slot) {
+		if(hasPreviousMenu()) {
+			return new MenuItem(slot, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName(ChatColor.DARK_RED + "Retour").build()).setClickCallback(click -> {
+				previousMenu.open();
+			});
+		}else {
+			return new MenuItem(slot, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName(ChatColor.DARK_RED + "Fermer").build()).setClickCallback(click -> {
+				player.closeInventory();
+			});
+		}
+	}
+
 
 	public void addMenuBorder(){
 		for (int i = 0; i < 10; i++) {
@@ -265,15 +266,5 @@ public abstract class Menu implements InventoryHolder {
 		}
 	}
 
-	protected void addItemAsync(MenuItem beforeLoaded, CompletableFuture<MenuItem> afterLoaded){
-		addMenuItem(beforeLoaded);
-		afterLoaded.thenAccept(item -> {
-			addMenuItem(item);
-			if(page == item.getPage() || item.getPage() == -1){
-				inventory.setItem(item.getSlot(), item.getItem());
-			}
-		});
-	}
 
 }
-

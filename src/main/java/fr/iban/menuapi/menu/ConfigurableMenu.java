@@ -10,8 +10,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.iban.menuapi.MenuAPI;
-import fr.iban.menuapi.MenuItem;
-import fr.iban.menuapi.ConfigurableItem;
+import fr.iban.menuapi.menuitem.MenuItem;
+import fr.iban.menuapi.menuitem.ConfigurableItem;
 
 public abstract class ConfigurableMenu<T> extends PaginatedMenu {
 
@@ -32,9 +32,7 @@ public abstract class ConfigurableMenu<T> extends PaginatedMenu {
 	public boolean cancelClicks() {
 		return !editMode;
 	}
-
-	public abstract void setMenuTemplateItems();
-
+	
 	protected abstract Collection<T> getItems();
 
 	protected abstract ConfigurableItem getConfigurableItem(T object);
@@ -134,7 +132,7 @@ public abstract class ConfigurableMenu<T> extends PaginatedMenu {
 								T t = getItemAtSlot(e.getSlot());
 								if(t != null) {
 									ConfigurableItem configurableItem = getConfigurableItem(t);
-									player.sendMessage("§aChangement de l'icone : " +configurableItem.getItemstack().getType() + " -> " + cursor.getType());
+									player.sendMessage("§aChangement de l'icone : " +configurableItem.getItemStack().getType() + " -> " + cursor.getType());
 									configurableItem.setItemstack(cursor);
 									setItemDisplay(t, configurableItem);
 									reload();
