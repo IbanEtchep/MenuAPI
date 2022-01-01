@@ -44,7 +44,7 @@ public abstract class PaginatedMenu extends Menu {
 		setMenuTemplateItem(getPreviousBotton().setSlot(lastRowFirst+3));
 		//setMenuTemplateItem(lastRowFirst+3,new MenuItem(FILLER_GLASS, () -> !prevBotton.getDisplayCondition().getAsBoolean()));
 
-		setCloseButton(lastRowFirst+4);
+		setMenuTemplateItem(getCloseBotton(lastRowFirst+4));
 	}
 
 	protected MenuItem getNextBotton() {
@@ -54,15 +54,6 @@ public abstract class PaginatedMenu extends Menu {
 					open();
 				})
 				.setDisplayCondition(() -> page != getLastPage());
-	}
-
-	protected void setNextPageButton(int slot){
-		addMenuItem(new MenuItem(slot, -1, new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).setName(ChatColor.GREEN + "Suivant").build())
-				.setClickCallback(click -> {
-					page += 1;
-					open();
-				})
-				.setDisplayCondition(() -> page != getLastPage()));
 	}
 
 	protected MenuItem getPreviousBotton() {

@@ -3,6 +3,8 @@ version: ${project.version}
 author: Iban
 main: fr.iban.menuapi.MenuAPI
 api-version: 1.17
+softdepend:
+  - HeadDatabase
 
 commands:
   menuapi:

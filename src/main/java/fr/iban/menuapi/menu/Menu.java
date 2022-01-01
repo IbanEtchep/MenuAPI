@@ -55,12 +55,12 @@ public abstract class Menu implements InventoryHolder {
 		fillInventory();
 		player.openInventory(inventory);
 	}
-	
+
 	public void reload() {
 		loaded = false;
 		open();
 	}
-	
+
 	@Override
 	public Inventory getInventory() {
 		return inventory;
@@ -74,11 +74,11 @@ public abstract class Menu implements InventoryHolder {
 		return getRows()*9;
 	}
 
-	
+
 	/*
-	 * Handle Events : 
+	 * Handle Events :
 	 */
-	
+
 	public void handleMenuClick(InventoryClickEvent e) {
 		if(e.getClickedInventory() == e.getView().getTopInventory()) {
 			int slot = page*getSlots()+e.getSlot();
@@ -94,7 +94,7 @@ public abstract class Menu implements InventoryHolder {
 			}
 		}
 	}
-	
+
 	public boolean cancelClicks() {
 		return true;
 	}
@@ -174,9 +174,20 @@ public abstract class Menu implements InventoryHolder {
 		templateItems.put(slot, new MenuItem(slot, item));
 	}
 
+	protected void setTemplateItemAsync(MenuItem beforeLoaded, CompletableFuture<MenuItem> afterLoaded){
+		setMenuTemplateItem(beforeLoaded);
+		afterLoaded.thenAccept(item -> {
+			setMenuTemplateItem(item);
+			if(page == item.getPage() || item.getPage() == -1){
+				inventory.setItem(item.getSlot(), item.getItemStack());
+			}
+		});
+	}
+
 	public boolean isTemplateSlot(int slot) {
 		return templateSlots.contains(slot) ;
 	}
+
 
 	/*
 	 * Utils
@@ -212,24 +223,23 @@ public abstract class Menu implements InventoryHolder {
 			inventory.setItem(i, FILLER_GLASS);
 		}
 	}
-	
+
 	protected String centerTitle(String title) {
-	    return Strings.repeat(" ", 22 - ChatColor.stripColor(title).length()) + title;
+		return Strings.repeat(" ", 22 - ChatColor.stripColor(title).length()) + title;
 	}
 
-	protected void setCloseButton(int slot){
+	protected MenuItem getCloseBotton(int slot) {
 		if(hasPreviousMenu()) {
-			addMenuItem(new MenuItem(slot, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName(ChatColor.DARK_RED + "Retour").build())
-					.setClickCallback(click -> {
-						previousMenu.open();
-					}));
+			return new MenuItem(slot, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName(ChatColor.DARK_RED + "Retour").build()).setClickCallback(click -> {
+				previousMenu.open();
+			});
 		}else {
-			addMenuItem(new MenuItem(slot, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName(ChatColor.DARK_RED + "Fermer").build())
-					.setClickCallback(click -> {
-						player.closeInventory();
-					}));
+			return new MenuItem(slot, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName(ChatColor.DARK_RED + "Fermer").build()).setClickCallback(click -> {
+				player.closeInventory();
+			});
 		}
 	}
+
 
 	public void addMenuBorder(){
 		for (int i = 0; i < 10; i++) {
@@ -258,4 +268,3 @@ public abstract class Menu implements InventoryHolder {
 
 
 }
-

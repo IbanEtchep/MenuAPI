@@ -19,7 +19,7 @@ public abstract class LazyPaginatedMenu<T> extends PaginatedMenu {
 	protected LazyPaginatedMenu(Player player) {
 		super(player);
 		this.lazyObjectList = getLazyObjectList();
-		lastPage = lazyObjectList.size()/getFillableSlots().length;
+		lastPage = lazyObjectList.size()/getFillableSlots().length-1;
 	}
 
 	protected abstract int[] getFillableSlots();

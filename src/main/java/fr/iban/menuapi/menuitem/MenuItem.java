@@ -47,7 +47,7 @@ public class MenuItem {
 	}
 
 	public void onClick(InventoryClickEvent e){
-		if(clickCallback != null){
+		if(clickCallback != null && isDisplayable()){
 			clickCallback.accept(e);
 		}
 	}
