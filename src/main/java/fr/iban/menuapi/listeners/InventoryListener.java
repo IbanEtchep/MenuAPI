@@ -14,9 +14,8 @@ public class InventoryListener implements Listener {
     public void onMenuClick(InventoryClickEvent e){
     	
         InventoryHolder holder = e.getInventory().getHolder();
-        if (holder instanceof Menu) {
-            Menu menu = (Menu) holder;
-            e.setCancelled(menu.cancelClicks()); 
+        if (holder instanceof Menu menu) {
+            e.setCancelled(menu.cancelClicks());
             menu.handleMenuClick(e);
         }
 
@@ -27,8 +26,7 @@ public class InventoryListener implements Listener {
 
         InventoryHolder holder = e.getInventory().getHolder();
 
-        if (holder instanceof Menu) {
-            Menu menu = (Menu) holder;
+        if (holder instanceof Menu menu) {
             menu.handleMenuClose(e);
         }
 

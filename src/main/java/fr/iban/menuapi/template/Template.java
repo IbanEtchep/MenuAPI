@@ -6,9 +6,9 @@ import java.util.Map;
 
 public class Template {
 
-    private String name;
+    private final String name;
     //          ID       DISPLAY
-    private Map<Integer, ConfigurableItem> displays;
+    private final Map<Integer, ConfigurableItem> displays;
 
     public Template(String name, Map<Integer, ConfigurableItem> displays){
         this.displays = displays;

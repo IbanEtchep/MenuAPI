@@ -5,15 +5,14 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import fr.iban.menuapi.utils.ItemBuilder;
-import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.function.Consumer;
 
 public class ConfirmMenu extends Menu {
 	
-	private String title;
-	private String desc;
-	private Consumer<Boolean> callback;
+	private final String title;
+	private final String desc;
+	private final Consumer<Boolean> callback;
 
 	public ConfirmMenu(Player player, Consumer<Boolean> callback) {
 		this(player, "§2Confirmer", "§aVoulez-vous vraiment faire cela?", callback);

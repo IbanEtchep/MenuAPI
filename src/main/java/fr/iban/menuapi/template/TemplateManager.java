@@ -11,7 +11,7 @@ public class TemplateManager {
 
     private MenuAPI plugin;
     private Map<String, Template> templates;
-    private Configuration config;
+    private final Configuration config;
 
 
     public TemplateManager(MenuAPI plugin) {
@@ -27,7 +27,7 @@ public class TemplateManager {
             for(String name : config.getConfigurationSection("menus").getKeys(false)){
                 String configPath = "menus."+name;
                 Map<Integer, ConfigurableItem> map = new HashMap<>();
-                for(int slot : config.getConfigurationSection(configPath+".items").getKeys(false).stream().map(s -> Integer.parseInt(s)).toList()){
+                for(int slot : config.getConfigurationSection(configPath+".items").getKeys(false).stream().map(Integer::parseInt).toList()){
                     map.put(slot, ((ConfigurableItem) config.get(configPath+".items."+slot)));
                 }
                 templates.put(name, new Template(name, map));

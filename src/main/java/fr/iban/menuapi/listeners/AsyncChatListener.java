@@ -11,7 +11,7 @@ import fr.iban.menuapi.MenuAPI;
 
 public class AsyncChatListener implements Listener {
 
-	private MenuAPI plugin;
+	private final MenuAPI plugin;
 
 	public AsyncChatListener(MenuAPI plugin) {
 		this.plugin = plugin;

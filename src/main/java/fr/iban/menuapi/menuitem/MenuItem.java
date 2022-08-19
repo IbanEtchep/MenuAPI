@@ -19,7 +19,6 @@ public class MenuItem {
 	 */
 	public MenuItem(int slot, ItemStack itemstack) {
 		this.slot = slot;
-		this.page = -1;
 		this.itemstack = itemstack;
 	}
 

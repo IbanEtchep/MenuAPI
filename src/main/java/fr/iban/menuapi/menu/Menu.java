@@ -26,6 +26,7 @@ import com.google.common.collect.Multimap;
 import fr.iban.menuapi.menuitem.MenuItem;
 import fr.iban.menuapi.utils.ItemBuilder;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.jetbrains.annotations.NotNull;
 
 
 public abstract class Menu implements InventoryHolder {
@@ -62,7 +63,7 @@ public abstract class Menu implements InventoryHolder {
 	}
 
 	@Override
-	public Inventory getInventory() {
+	public @NotNull Inventory getInventory() {
 		return inventory;
 	}
 
@@ -195,15 +196,12 @@ public abstract class Menu implements InventoryHolder {
 
 
 	/**
-	 * Util to cut a string into litle parts of defined size.
-	 * @param msg
-	 * @param lineSize
-	 * @return
+	 * Utility method to cut a string into little parts of defined size.
 	 */
-	protected List<String> splitString(String msg, int lineSize) {
+	protected List<String> splitString(String string, int lineSize) {
 		List<String> res = new ArrayList<>();
-		Pattern p = Pattern.compile("\\b.{1," + (lineSize-1) + "}\\b\\W?");
-		Matcher m = p.matcher(msg);
+		Pattern p = Pattern.compile("\\b.+" + (lineSize-1) + "}\\b\\W?");
+		Matcher m = p.matcher(string);
 		while(m.find()) {
 			res.add("§a" + m.group());
 		}

@@ -15,10 +15,10 @@ import fr.iban.menuapi.menuitem.ConfigurableItem;
 
 public class ConfigurableTemplate extends ConfigurableMenu<Integer>{
 
-	private @NotNull FileConfiguration config;
-	private String configPath;
-	private String name;
-	private Plugin plugin;
+	private final @NotNull FileConfiguration config;
+	private final String configPath;
+	private final String name;
+	private final Plugin plugin;
 
 	public ConfigurableTemplate(Player player, Plugin plugin, Template template) {
 		super(player);
@@ -40,7 +40,7 @@ public class ConfigurableTemplate extends ConfigurableMenu<Integer>{
 
 	@Override
 	protected Collection<Integer> getItems() {
-		return config.getConfigurationSection(configPath+".items").getKeys(false).stream().map(s -> Integer.parseInt(s)).toList();
+		return config.getConfigurationSection(configPath+".items").getKeys(false).stream().map(Integer::parseInt).toList();
 	}
 
 	@Override
@@ -57,10 +57,6 @@ public class ConfigurableTemplate extends ConfigurableMenu<Integer>{
 	@Override
 	protected MenuItem getMenuItem(Integer integer) {
 		return getConfigurableItem(integer);
-	}
-	
-	public Map<Integer, MenuItem> getMenuItems() {
-		return menuItems;
 	}
 
 	@Override

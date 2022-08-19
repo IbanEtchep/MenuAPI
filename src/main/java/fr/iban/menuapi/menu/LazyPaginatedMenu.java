@@ -1,20 +1,15 @@
 package fr.iban.menuapi.menu;
 
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import fr.iban.menuapi.menuitem.MenuItem;
 import org.bukkit.entity.Player;
 
-import fr.iban.menuapi.menuitem.MenuItem;
-import fr.iban.menuapi.utils.ItemBuilder;
+import java.util.List;
 
 
 public abstract class LazyPaginatedMenu<T> extends PaginatedMenu {
 
-	private List<T> lazyObjectList;
-	private int lastPage;
+	private final List<T> lazyObjectList;
+	private final int lastPage;
 
 	protected LazyPaginatedMenu(Player player) {
 		super(player);
