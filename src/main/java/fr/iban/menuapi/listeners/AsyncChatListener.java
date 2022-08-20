@@ -23,7 +23,6 @@ public class AsyncChatListener implements Listener {
 		if(plugin.getTextInputs().containsKey(player.getUniqueId())) {
 			Bukkit.getScheduler().runTask(plugin, () -> plugin.getTextInputs().get(player.getUniqueId()).accept(e.getMessage()));
 			e.setCancelled(true);
-			return;
 		}
 	}
 }
